@@ -7,12 +7,12 @@ from Models.AnalyzeHealthcareEntitiesResult import AnalyzeHealthcareEntitiesResu
 
 def main():
     MEDICAL_PAPER_COUNT = 1
-    dataset = MachineLearningProvider().getMLDataset(numberOfRows = 1)
+    dataset = MachineLearningProvider().getMLDataset(numberOfRows = 10)
     
     # listOfMedPaperAbstracts = dataset['abstract'].astype(str).values.tolist()
     db = CosmosDBProvider()
 
-    CHUNK_SIZE = 1
+    CHUNK_SIZE = 2
 
     for i in range(0, len(dataset), CHUNK_SIZE):
         temp_abstract_list = [dataset.loc[i+a, 'abstract'] for a in range(CHUNK_SIZE)]
@@ -34,6 +34,7 @@ def main():
             
             analyzeHealthcareEntitiesResult = AnalyzeHealthcareEntitiesResult(dataset.loc[i+idx], entities, entity_relations)
             db.upsertDataToContainer(analyzeHealthcareEntitiesResult.to_dict())
+            
             print("Medical Paper Processed:", MEDICAL_PAPER_COUNT)
             MEDICAL_PAPER_COUNT+=1
 
