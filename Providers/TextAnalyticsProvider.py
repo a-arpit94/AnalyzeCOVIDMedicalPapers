@@ -1,5 +1,6 @@
-from Services.TextAnalyticsService import TextAnalyticsService
+
 from EntityNames import EntityNames
+from Services.TextAnalyticsService import TextAnalyticsService
 
 class TextAnalyticsProvider:
 

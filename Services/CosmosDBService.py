@@ -1,6 +1,6 @@
+from Builders.URLBuilder import URLBuilder
 from azure.cosmos import CosmosClient
 from EntityNames import EntityNames
-from Builders.URLBuilder import URLBuilder
 
 class CosmosDBService:
 

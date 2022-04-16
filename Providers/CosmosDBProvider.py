@@ -1,5 +1,7 @@
-from Services.CosmosDBService import CosmosDBService
+
 from EntityNames import EntityNames
+from Services.CosmosDBService import CosmosDBService
+
 
 class CosmosDBProvider:
 

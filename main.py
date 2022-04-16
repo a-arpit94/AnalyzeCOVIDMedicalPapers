@@ -1,8 +1,8 @@
 from Providers.MachineLearningProvider import MachineLearningProvider
-from Providers.TextAnalyticsProvider import  TextAnalyticsProvider
+from Providers.TextAnalyticsProvider import TextAnalyticsProvider
 from Providers.CosmosDBProvider import CosmosDBProvider
-from Models.HealthcareEntity import HealthcareEntity
 from Models.HealthcareRelation import HealthcareRelation
+from Models.HealthcareEntity import HealthcareEntity
 from Models.AnalyzeHealthcareEntitiesResult import AnalyzeHealthcareEntitiesResult
 
 def main():
