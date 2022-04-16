@@ -1,5 +1,6 @@
-from Services.MachineLearningService import MachineLearningService
+
 from EntityNames import EntityNames
+from Services.MachineLearningService import MachineLearningService
 
 class MachineLearningProvider:
 
