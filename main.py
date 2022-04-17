@@ -8,18 +8,19 @@ import sys
 
 def main():
     MEDICAL_PAPER_COUNT = 1
-    dataset = MachineLearningProvider().getMLDataset(numberOfRows = 1000)
+    dataset = MachineLearningProvider().getMLDataset(probability=0.012)
     
     # listOfMedPaperAbstracts = dataset['abstract'].astype(str).values.tolist()
     db = CosmosDBProvider()
 
-    CHUNK_SIZE = 5
+    CHUNK_SIZE = 10
 
     try:
         for i in range(0, len(dataset), CHUNK_SIZE):
             try:
                 temp_abstract_list = []
-                temp_abstract_list = [dataset.loc[i+a, 'abstract'] for a in range(CHUNK_SIZE)]
+                temp_abstract_list = [dataset.abstract[i+a] for a in range(CHUNK_SIZE)]
+                
                 poller =  TextAnalyticsProvider().getHealthcareEntities(document = temp_abstract_list)
                 textAnalysisResult = list(poller.result())
                 
@@ -35,7 +36,7 @@ def main():
                         healthcareRelation = HealthcareRelation(relation)
                         entity_relations.append(healthcareRelation.to_dict())
                     
-                    analyzeHealthcareEntitiesResult = AnalyzeHealthcareEntitiesResult(dataset.loc[i+idx], entities, entity_relations)
+                    analyzeHealthcareEntitiesResult = AnalyzeHealthcareEntitiesResult(dataset.iloc[i+idx], entities, entity_relations)
                     db.upsertDataToContainer(analyzeHealthcareEntitiesResult.to_dict())
                     
                     print("Medical Paper Processed:", MEDICAL_PAPER_COUNT)
