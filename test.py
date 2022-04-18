@@ -5,8 +5,13 @@ def main():
     print("working")
     dataset = MachineLearningProvider().getMLDataset(probability = 0.012)
 
+    CHUNK_SIZE = 50
+
+    num = len(dataset) - (len(dataset) % CHUNK_SIZE)
+    # num = 5622 - (5622 % CHUNK_SIZE)
     print(dataset.shape)
-    print(dataset.cord_uid[0])
+    print(num)
+    # print(dataset.cord_uid[0])
 
     # for i in range(0, len(dataset)):
         # print(dataset.iloc[i])

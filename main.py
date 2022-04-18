@@ -8,15 +8,16 @@ import sys
 
 def main():
     MEDICAL_PAPER_COUNT = 1
-    dataset = MachineLearningProvider().getMLDataset(probability=0.012)
+    dataset = MachineLearningProvider().getMLDataset(probability=0.015)
     
     # listOfMedPaperAbstracts = dataset['abstract'].astype(str).values.tolist()
     db = CosmosDBProvider()
 
-    CHUNK_SIZE = 10
+    CHUNK_SIZE = 5
+    num = len(dataset) - (len(dataset) % CHUNK_SIZE)
 
     try:
-        for i in range(0, len(dataset), CHUNK_SIZE):
+        for i in range(0, num, CHUNK_SIZE):
             try:
                 temp_abstract_list = []
                 temp_abstract_list = [dataset.abstract[i+a] for a in range(CHUNK_SIZE)]
