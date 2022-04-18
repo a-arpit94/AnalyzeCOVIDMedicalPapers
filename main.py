@@ -4,57 +4,51 @@ from Providers.CosmosDBProvider import CosmosDBProvider
 from Models.HealthcareRelation import HealthcareRelation
 from Models.HealthcareEntity import HealthcareEntity
 from Models.AnalyzeHealthcareEntitiesResult import AnalyzeHealthcareEntitiesResult
+import sys
 
 def main():
+    MEDICAL_PAPER_COUNT = 1
+    dataset = MachineLearningProvider().getMLDataset(probability=0.015)
     
-    document = MachineLearningProvider().getMLDataset(numberOfRows = 2)
-    
-    poller =  TextAnalyticsProvider().getHealthcareEntities(document = document)
-    res = list(poller.result())
-    
-    print("##############")
-
+    # listOfMedPaperAbstracts = dataset['abstract'].astype(str).values.tolist()
     db = CosmosDBProvider()
-    for idx, item in enumerate(res):
-        entities = []
-        entity_relations = []
-        print("START ITEM", idx)
-        for entity in item.entities:
-            healthcareEntity = HealthcareEntity(entity)
-            entities.append(healthcareEntity.to_dict())
 
-        for relation in item.entity_relations:
-            healthcareRelation = HealthcareRelation(relation)
-            entity_relations.append(healthcareRelation.to_dict())
+    CHUNK_SIZE = 5
+    num = len(dataset) - (len(dataset) % CHUNK_SIZE)
 
-        analyzeHealthcareEntitiesResult = AnalyzeHealthcareEntitiesResult(idx, entities, entity_relations)
-        db.upsertDataToContainer(analyzeHealthcareEntitiesResult.to_dict())
-        print("END ITEM", idx)
+    try:
+        for i in range(0, num, CHUNK_SIZE):
+            try:
+                temp_abstract_list = []
+                temp_abstract_list = [dataset.abstract[i+a] for a in range(CHUNK_SIZE)]
+                
+                poller =  TextAnalyticsProvider().getHealthcareEntities(document = temp_abstract_list)
+                textAnalysisResult = list(poller.result())
+                
+                for idx, item in enumerate(textAnalysisResult):
+                    entities = []
+                    entity_relations = []
 
-    # for idx, doc in enumerate(res):
-    #     for entity in doc.entities:
-    #         print(f"Entity: {entity.text}")
-    #         print(f"...Normalized Text: {entity.normalized_text}")
-    #         print(f"...Category: {entity.category}")
-    #         print(f"...Subcategory: {entity.subcategory}")
-    #         print(f"...Confidence score: {entity.confidence_score}")
-    #         if entity.data_sources is not None:
-    #             print("...Data Sources:")
-    #             for data_source in entity.data_sources:
-    #                 print(f"......Entity ID: {data_source.entity_id}")
-    #                 print(f"......Name: {data_source.name}")
-    #         if entity.assertion is not None:
-    #             print("...Assertion:")
-    #             print(f"......Conditionality: {entity.assertion.conditionality}")
-    #             print(f"......Certainty: {entity.assertion.certainty}")
-    #             print(f"......Association: {entity.assertion.association}")
-    #     for relation in doc.entity_relations:
-    #         print(f"Relation of type: {relation.relation_type} has the following roles")
-    #         for role in relation.roles:
-    #             print(f"...Role '{role.name}' with entity '{role.entity.text}'")
-    #     print("------------------------------------------")
-    print("##############")
+                    for entity in item.entities:
+                        healthcareEntity = HealthcareEntity(entity)
+                        entities.append(healthcareEntity.to_dict())
 
+                    for relation in item.entity_relations:
+                        healthcareRelation = HealthcareRelation(relation)
+                        entity_relations.append(healthcareRelation.to_dict())
+                    
+                    analyzeHealthcareEntitiesResult = AnalyzeHealthcareEntitiesResult(dataset.iloc[i+idx], entities, entity_relations)
+                    db.upsertDataToContainer(analyzeHealthcareEntitiesResult.to_dict())
+                    
+                    print("Medical Paper Processed:", MEDICAL_PAPER_COUNT)
+                    MEDICAL_PAPER_COUNT+=1
+                
+            except:
+                print(f"ERROR OCCURRED FOR PAPER NUMBER {MEDICAL_PAPER_COUNT} :: {sys.exc_info()[0]}")
+                MEDICAL_PAPER_COUNT+=1
+
+    except:
+        pass
 
 
 if __name__ == "__main__":
