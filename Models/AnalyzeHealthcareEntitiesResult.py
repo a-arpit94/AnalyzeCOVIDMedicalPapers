@@ -10,11 +10,11 @@ class AnalyzeHealthcareEntitiesResult:
 
     def to_dict(result):
         if isinstance(result, AnalyzeHealthcareEntitiesResult):
-            source_x = result.dataset['source_x'].split('; ') if ';' in result.dataset['source_x'] else result.dataset['source_x']
+            source_x = result.dataset['source_x'].split('; ') if ';' in result.dataset['source_x'] else [result.dataset['source_x']]
 
             authors = None
             if result.dataset['authors'] is not None:
-                authors = result.dataset['authors'].split('; ') if ';' in result.dataset['authors'] else result.dataset['authors']
+                authors = result.dataset['authors'].split('; ') if ';' in result.dataset['authors'] else [result.dataset['authors']]
 
             dict = {
                 'id': result.dataset['cord_uid'],
